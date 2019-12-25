@@ -48,7 +48,7 @@ if __name__ == "__main__":
     output_text = []
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--source', nargs='?', required=True, help="Source of your input file (lsf, sge or slurm)")
-    parser.add_argument('-t', '--target', nargs='?', default="pbs", help="Target e of your input file (lsf, sge or slurm)")
+    parser.add_argument('-t', '--target', nargs='?', default="pbs", help="Target of your input file (lsf, sge or slurm)")
     parser.add_argument('-i', '--input', nargs='?', required=True, help="path to the file you want to translate")
     arg = parser.parse_args()
     scheduler = str(arg.source).lower()
