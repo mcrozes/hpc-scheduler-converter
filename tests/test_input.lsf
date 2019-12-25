@@ -1,0 +1,36 @@
+#!/bin/bash
+#BSUB -J job_name # job name
+#BSUB -W 01:00 # wall-clock time (hrs:mins)
+#BSUB -n 64 # number of tasks in job
+#BSUB -R "span[ptile=4]" # run four MPI tasks per node
+#BSUB -q normal # queue
+#BSUB -e hybrid.error.%J # error file name in which %J is replaced by the job ID
+#BSUB -o hybrid.output.%J # output file name in which %J is replaced by the job ID
+#BSUB -x # Exclusive execution mode. The job is running exclusively on a host
+
+rm -f hostfile
+cat $LSB_DJOB_HOSTFILE > hostfile
+
+export SAVE_ALL_TASKS=no
+export LD_LIBRARY_PATH=/gpfs1/home/Libs/INTEL/DAPL/dapl-2.1.10/lib:$LD_LIBRARY_PATH
+ulimit -c unlimited
+export I_MPI_HYDRA_BOOTSTRAP=ssh
+export I_MPI_DEBUG=5
+export I_MPI_DAPL_PROVIDER=ofa-v2-mlx4_0-1u
+export I_MPI_FABRICS=shm:dapl
+export DAPL_UCM_REP_TIME=2000
+export DAPL_UCM_RTU_TIME=2000
+export DAPL_UCM_CQ_SIZE=2000
+export DAPL_UCM_QP_SIZE=2000
+export DAPL_UCM_RETRY=7
+export DAPL_ACK_RETRY=7
+export DAPL_ACK_TIMER=20
+export I_MPI_DAPL_UD=enable
+export I_MPI_DAPL_UD_DIRECT_COPY_THRESHOLD=2097152
+export OMP_NUM_THREADS=4
+export I_MPI_FALLBACK=0
+export OMP_STACKSIZE=16000000
+export KMP_AFFINITY=verbose,scatter
+export FORT_BUFFERED=yes
+
+/usr/bin/time -p mpiexec.hydra -f ./hostfile -perhost 4 -np 64 -genvall $EXECUTABLE_NAME
